@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="styles.css">   (aqui eu estava testando o css em arquivo externo)-->
+    <title>Gerador de Apresentação de Slides</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        textarea {
+            width: 50%;
+            padding: 100px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .presentation-container {
+            background-color: black;
+            color: #ffffff;
+            font-size: 70px;
+            font-weight: bold;
+            text-align: center;
+            white-space: pre-wrap;
+            max-width: 80%;
+            overflow: hidden;
+            height: 80%;
+            display: none; /* Inicialmente oculta */
+            align-items: center;
+            justify-content: center;
+            padding-top: 5%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gerador de Apresentação de Slides</h1>
+    <textarea id="text" placeholder="Insira o texto para criar os slides"></textarea>
+    <button id="presentButton">Apresentar</button>
+    <div class="presentation-container" id="presentationContainer">
+        <!-- Pastor, a apresentação em tela cheia será exibida aqui -->
+    </div>
+    <script>
+        let currentSlide = 0;
+        let presentationText = null;
+
+        // Função para gerar a apresentação de tela cheia
+        function generatePresentation() {
+            presentationText = document.getElementById("text").value;
+            const presentationContainer = document.getElementById("presentationContainer");
+
+            // Limpar o container de apresentação
+            presentationContainer.innerHTML = '';
+
+            // Exibir o primeiro parágrafo
+            currentSlide = 0;
+            updateSlide();
+
+            // Exibir o container de apresentação em tela cheia
+            presentationContainer.style.display = "flex"; // Exibe quando em tela cheia
+            presentationContainer.requestFullscreen().catch(err => {
+                console.error(err);
+            });
+        }
+
+        // Adicionar evento de clique ao botão "Apresentar"
+        document.getElementById("presentButton").addEventListener("click", generatePresentation);
+
+        // Função para atualizar o slide exibido
+        function updateSlide() {
+            const presentationContainer = document.getElementById("presentationContainer");
+            const paragraphs = presentationText.split('\n\n');
+            
+            if (currentSlide >= 0 && currentSlide < paragraphs.length) {
+                presentationContainer.innerHTML = `<div class="presentation">${paragraphs[currentSlide]}</div>`;
+            } else {
+                presentationContainer.innerHTML = '';
+            }
+        }
+
+        // Adicionar evento de teclado para navegar pelos slides
+        document.addEventListener("keydown", function(event) {
+            if (presentationText) {
+                if (event.key === "ArrowRight") {
+                    if (currentSlide < presentationText.split('\n\n').length - 1) {
+                        currentSlide++;
+                        updateSlide();
+                    }
+                } else if (event.key === "ArrowLeft") {
+                    if (currentSlide > 0) {
+                        currentSlide--;
+                        updateSlide();
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
